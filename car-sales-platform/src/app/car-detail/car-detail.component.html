@@ -1,0 +1,23 @@
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h2>{{ car.make }} {{ car.model }}</h2>
+      <img *ngIf="car.picture" [src]="car.picture" alt="{{ car.make }} {{ car.model }}" style="max-width: 200px;">
+      <p>Year: {{ car.manufactureYear }}</p>
+      <p>Price: {{ car.price }}</p>
+      <p>Owner ID: {{ car.ownerId }}</p>
+      <button (click)="deleteCar()">Delete</button>
+
+      <form #imageForm="ngForm" (ngSubmit)="onSubmit()">
+        <img [src]="imageUrl" class="imgArea" *ngIf="imageUrl">
+        <div class="image-upload">
+          <label for="file-input">
+            <img src="upload.jpg" />
+          </label>
+          <input id="file-input" type="file" (change)="handleFileInput($event)" />
+          <button type="submit" class="btn-large btn-submit" [disabled]="!imageForm.valid || !selectedFile"><i class="material-icons">save</i></button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
