@@ -1,10 +1,14 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CarService } from '../car.service';
 import { Car } from '../car.model';
+import { FormGroup, FormBuilder, Validators } from '@angular/forms';
+import { ReactiveFormsModule } from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-car-form',
@@ -12,48 +16,58 @@ import { Car } from '../car.model';
   styleUrls: ['./car-form.component.scss'],
   standalone: true,
   imports: [
-    CommonModule,
-    HttpClientModule,
-    FormsModule
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatButtonModule,
+    MatCardModule,
+    CommonModule
   ]
 })
 export class CarFormComponent implements OnInit {
-  car: Car = {
-    id: 0,
-    make: '',
-    model: '',
-    manufactureYear: 0,
-    price: 0,
-    ownerId: 0,
-    picture: ''
-  };
-  selectedFile: File | null = null;
+  carForm: FormGroup;
+  carId: number | null = null;
 
-  constructor(private carService: CarService, private router: Router) {}
+  constructor(
+    private fb: FormBuilder,
+    private carService: CarService,
+    private route: ActivatedRoute,
+    private router: Router
+  ) {
+    this.carForm = this.fb.group({
+      make: ['', Validators.required],
+      model: ['', Validators.required],
+      manufactureYear: ['', Validators.required],
+      price: ['', Validators.required],
+      ownerId: ['', Validators.required]
+    });
+  }
 
-  ngOnInit(): void {}
-
-  onFileSelected(event: any): void {
-    this.selectedFile = event.target.files[0];
+  ngOnInit(): void {
+    this.route.paramMap.subscribe(params => {
+      this.carId = Number(params.get('id'));
+      if (this.carId) {
+        this.carService.getCarById(this.carId).subscribe((car: Car) => {
+          this.carForm.patchValue(car);
+        });
+      }
+    });
   }
 
   saveCar(): void {
-    if (this.selectedFile) {
-      const formData = new FormData();
-      formData.append('file', this.selectedFile);
-
-      this.carService.uploadFile(formData).subscribe(response => {
-        this.car.picture = response;
-        this.saveCarDetails();
-      });
-    } else {
-      this.saveCarDetails();
+    if (this.carForm.valid) {
+      const carData = this.carForm.value;
+      if (this.carId) {
+        // If there's an id, update the existing car
+        this.carService.updateCar(this.carId, carData).subscribe(() => {
+          this.router.navigate(['/cars']);
+        });
+      } else {
+        // Otherwise, create a new car
+        this.carService.addCar(carData).subscribe(() => {
+          this.router.navigate(['/cars']);
+        });
+      }
     }
-  }
-
-  saveCarDetails(): void {
-    this.carService.addCar(this.car).subscribe(() => {
-      this.router.navigate(['/cars']);
-    });
   }
 }

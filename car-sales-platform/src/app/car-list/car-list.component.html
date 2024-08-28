@@ -1,15 +1,18 @@
 <div class="container">
-  <div class="row">
-    <div class="col-md-12">
-      <h2>Car List</h2>
-      <ul>
-        <li *ngFor="let car of cars">
-          <a [routerLink]="['/cars', car.id]">{{ car.make }} {{ car.model }}</a>
-          <img *ngIf="car.picture" [src]="car.picture" alt="{{ car.make }} {{ car.model }}" style="max-width: 200px;">
-          <button (click)="deleteCar(car.id!)">Delete</button>
-        </li>
-      </ul>
-      <button [routerLink]="['/cars/new']">Add Car</button>
+  <h2>Car List</h2>
+  <div *ngFor="let car of cars" class="car-list-item">
+    <div class="car-details">
+      <a [routerLink]="['/cars', car.id]">{{ car.make }}</a>
     </div>
+    <div class="delete-button">
+      <button mat-icon-button (click)="deleteCar(car.id!)" aria-label="Delete car">
+        <mat-icon color="warn">delete</mat-icon>
+      </button>
+    </div>
+  </div>
+  <div class="add-car-button">
+    <button mat-raised-button color="primary" [routerLink]="['/cars/new']">
+      <mat-icon>add</mat-icon> Add Car
+    </button>
   </div>
 </div>

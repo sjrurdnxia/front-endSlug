@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Car } from './car.model';
 
@@ -29,9 +29,5 @@ export class CarService {
 
   deleteCar(id: number): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
-  }
-
-  uploadFile(formData: FormData): Observable<string> {
-    return this.http.post<string>('http://localhost:8080/api/files/upload', formData);
   }
 }

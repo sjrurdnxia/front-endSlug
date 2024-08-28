@@ -3,6 +3,9 @@ import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { MatListModule } from '@angular/material/list';
+import { MatIconModule } from '@angular/material/icon';
+import { MatButtonModule } from '@angular/material/button';
 import { CarService } from '../car.service';
 import { Car } from '../car.model';
 
@@ -15,7 +18,10 @@ import { Car } from '../car.model';
     CommonModule,
     RouterModule,
     HttpClientModule,
-    FormsModule
+    FormsModule,
+    MatListModule,
+    MatIconModule,
+    MatButtonModule,
   ]
 })
 export class CarListComponent implements OnInit {

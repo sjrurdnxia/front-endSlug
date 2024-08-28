@@ -1,82 +1,53 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CommonModule } from '@angular/common';
-import { HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
 import { CarService } from '../car.service';
 import { Car } from '../car.model';
+import { FileHandle } from '../file-handle.model';
+import { DomSanitizer } from '@angular/platform-browser';
+import { NgIf, CommonModule } from '@angular/common';
+import { RouterModule } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
 
 @Component({
   selector: 'app-car-detail',
   templateUrl: './car-detail.component.html',
   styleUrls: ['./car-detail.component.scss'],
   standalone: true,
-  imports: [
-    CommonModule,
-    HttpClientModule,
-    FormsModule
-  ]
+  imports: [NgIf, RouterModule, MatButtonModule, MatCardModule, CommonModule],
 })
 export class CarDetailComponent implements OnInit {
-  car: Car = {
-    id: 0,
-    make: '',
-    model: '',
-    manufactureYear: 0,
-    price: 0,
-    ownerId: 0,
-    picture: ''
-  };
-  selectedFile: File | null = null;
-  imageUrl: string | ArrayBuffer | null = '';
+  car: Car | undefined;
+  imageUrl: string | undefined;
 
   constructor(
-    private route: ActivatedRoute,
     private carService: CarService,
-    private router: Router
+    private route: ActivatedRoute,
+    private router: Router,
+    private sanitizer: DomSanitizer
   ) {}
 
   ngOnInit(): void {
-    const id = Number(this.route.snapshot.paramMap.get('id'));
-    this.carService.getCarById(id).subscribe((data) => {
-      this.car = data;
-      this.imageUrl = data.picture;
-    });
-  }
-
-  handleFileInput(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      this.selectedFile = input.files[0];
-      const reader = new FileReader();
-      reader.onload = (e) => this.imageUrl = reader.result;
-      reader.readAsDataURL(this.selectedFile);
-    }
-  }
-
-  onSubmit(): void {
-    if (this.selectedFile) {
-      const formData = new FormData();
-      formData.append('file', this.selectedFile);
-
-      this.carService.uploadFile(formData).subscribe(response => {
-        this.car.picture = response;
-        this.saveCarDetails();
+    const id = this.route.snapshot.paramMap.get('id');
+    if (id) {
+      this.carService.getCarById(+id).subscribe((data: Car) => {
+        this.car = data;
+        this.setImageUrl();
       });
-    } else {
-      this.saveCarDetails();
     }
   }
 
-  saveCarDetails(): void {
-    this.carService.updateCar(this.car.id!, this.car).subscribe(() => {
-      this.router.navigate(['/cars']);
-    });
+  setImageUrl(): void {
+    if (this.car && this.car.file && this.car.file.length > 0) {
+      this.imageUrl = this.car.file[0].url as string;
+    }
   }
 
   deleteCar(): void {
-    this.carService.deleteCar(this.car.id!).subscribe(() => {
-      this.router.navigate(['/cars']);
-    });
+    if (this.car && this.car.id) {
+      this.carService.deleteCar(this.car.id).subscribe(() => {
+        this.router.navigate(['/cars']);
+      });
+    }
   }
 }

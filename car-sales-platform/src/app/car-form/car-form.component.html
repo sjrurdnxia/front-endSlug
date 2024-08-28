@@ -1,29 +1,48 @@
-<div class="container">
-  <form (ngSubmit)="saveCar()">
-    <div class="form-group">
-      <label for="make">Make:</label>
-      <input id="make" [(ngModel)]="car.make" name="make" class="form-control" required>
-    </div>
-    <div class="form-group">
-      <label for="model">Model:</label>
-      <input id="model" [(ngModel)]="car.model" name="model" class="form-control" required>
-    </div>
-    <div class="form-group">
-      <label for="manufactureYear">Year:</label>
-      <input id="manufactureYear" [(ngModel)]="car.manufactureYear" name="manufactureYear" type="number" class="form-control" required>
-    </div>
-    <div class="form-group">
-      <label for="price">Price:</label>
-      <input id="price" [(ngModel)]="car.price" name="price" type="number" class="form-control" required>
-    </div>
-    <div class="form-group">
-      <label for="ownerId">Owner ID:</label>
-      <input id="ownerId" [(ngModel)]="car.ownerId" name="ownerId" type="number" class="form-control" required>
-    </div>
-    <div class="form-group">
-      <label for="picture">Picture:</label>
-      <input type="file" (change)="onFileSelected($event)" class="form-control">
-    </div>
-    <button type="submit" class="btn btn-primary">Save</button>
+<mat-card class="car-form-card">
+  <h2>{{ carId ? 'Edit Car' : 'Add Car' }}</h2>
+  <form [formGroup]="carForm" (ngSubmit)="saveCar()">
+    <mat-form-field appearance="fill">
+      <mat-label>Make</mat-label>
+      <input matInput id="make" type="text" formControlName="make" />
+      <mat-error *ngIf="carForm.get('make')?.hasError('required')">
+        Make is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Model</mat-label>
+      <input matInput id="model" type="text" formControlName="model" />
+      <mat-error *ngIf="carForm.get('model')?.hasError('required')">
+        Model is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Year</mat-label>
+      <input matInput id="manufactureYear" type="number" formControlName="manufactureYear" />
+      <mat-error *ngIf="carForm.get('manufactureYear')?.hasError('required')">
+        Year is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Price</mat-label>
+      <input matInput id="price" type="number" formControlName="price" />
+      <mat-error *ngIf="carForm.get('price')?.hasError('required')">
+        Price is required
+      </mat-error>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+      <mat-label>Owner ID</mat-label>
+      <input matInput id="ownerId" type="number" formControlName="ownerId" />
+      <mat-error *ngIf="carForm.get('ownerId')?.hasError('required')">
+        Owner ID is required
+      </mat-error>
+    </mat-form-field>
+
+    <button mat-raised-button color="primary" type="submit">
+      {{ carId ? 'Update' : 'Create' }}
+    </button>
   </form>
-</div>
+</mat-card>

@@ -1,3 +1,5 @@
+import { FileHandle } from "./file-handle.model";
+
 export interface Car {
     id: number; // Ensure id is of type number and required
     make: string;
@@ -5,6 +7,6 @@ export interface Car {
     manufactureYear: number;
     price: number;
     ownerId: number;
-    picture: string;
+    file: FileHandle[];
   }
   

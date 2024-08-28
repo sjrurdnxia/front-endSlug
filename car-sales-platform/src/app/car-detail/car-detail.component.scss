@@ -1,3 +1,13 @@
 .container{
     text-align: center;
 }
+.car-detail-card {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+  }
+  
+  img.imgArea {
+    max-height: 200px;
+    object-fit: cover;
+  }
