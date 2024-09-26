@@ -1,12 +1,12 @@
-import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { ReactiveFormsModule } from '@angular/forms';
+import { SocialAuthService, GoogleLoginProvider } from '@abacritt/angularx-social-login';
+import { MatCardModule } from '@angular/material/card';
+import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatButtonModule } from '@angular/material/button';
-import { MatCardModule } from '@angular/material/card';
-import { MatIconModule } from '@angular/material/icon';
+import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-login',
@@ -14,33 +14,46 @@ import { MatIconModule } from '@angular/material/icon';
   styleUrls: ['./login.component.scss'],
   standalone: true,
   imports: [
-    ReactiveFormsModule,
+    CommonModule,
+    MatCardModule,
+    MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule,
-    MatCardModule,
-    MatIconModule
-  ]
+    ReactiveFormsModule
+  ],
 })
-export class LoginComponent {
+export class LoginComponent implements OnInit {
   loginForm: FormGroup;
-  hide = true; // Property to toggle password visibility
 
   constructor(
     private fb: FormBuilder,
+    private authService: SocialAuthService,
     private router: Router
   ) {
     this.loginForm = this.fb.group({
-      username: ['', Validators.required],
-      password: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required]
     });
   }
 
-  onSubmit(): void {
+  ngOnInit(): void {}
+
+  signInWithGoogle(): void {
+    console.log('Google login initiated');
+    this.authService.signIn(GoogleLoginProvider.PROVIDER_ID).then((user) => {
+      console.log('Google User:', user);
+      localStorage.setItem('google_user', JSON.stringify(user));
+      this.router.navigate(['/dashboard']);
+    }).catch(err => {
+      console.error('Google Sign-In Error:', err);
+    });
+  }
+
+  onLogin(): void {
     if (this.loginForm.valid) {
-      const formData = this.loginForm.value;
-      console.log('Login successful with data:', formData);
-      this.router.navigate(['/cars']);
+      console.log('Login Form Value:', this.loginForm.value);
+      // Handle login logic here
+      this.router.navigate(['/dashboard']);
     }
   }
 }
